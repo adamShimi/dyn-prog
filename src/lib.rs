@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-pub fn find_optimal<S,A>(_prob : MDP<S,A>) -> Policy<S,A>
+pub fn find_optimal<S,A>(_prob : &MDP<S,A>) -> Policy<S,A>
   where S : State,
         A : Action {
   unimplemented!("Still everything to do!");
 }
 
-fn policy_evaluation<S,A>(_prob : MDP<S,A>,
-                          _pol : Policy<S,A>,
+fn policy_evaluation<S,A>(_prob : &MDP<S,A>,
+                          _pol : &Policy<S,A>,
                           _thresh : f64) -> StateValue<S>
   where S : State,
         A : Action {
@@ -16,9 +16,9 @@ fn policy_evaluation<S,A>(_prob : MDP<S,A>,
   unimplemented!("First block of General Policy Iteration");
 }
 
-fn policy_improvement<S,A>(_prob : MDP<S,A>,
-                           _pol : Policy<S,A>,
-                           _val : StateValue<S>) -> Policy<S,A>
+fn policy_improvement<S,A>(_prob : &MDP<S,A>,
+                           _pol : &Policy<S,A>,
+                           _val : &StateValue<S>) -> Policy<S,A>
   where S : State,
         A : Action {
 
