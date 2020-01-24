@@ -1,23 +1,25 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-pub fn find_optimal(_prob : MDP) -> Policy {
+pub fn find_optimal<S,A>(_prob : MDP<S,A>) -> Policy<S,A>
+  where S : State,
+        A : Action {
   unimplemented!("Still everything to do!");
 }
 
-pub struct State;
-pub struct Action;
+pub trait State {}
+pub trait Action {}
 
 // Deterministic policy
-type Policy = HashMap<State,Action>;
+type Policy<S : State, A : Action> = HashMap<S,A>;
 
-pub struct MDP {
-  states : HashSet<State>,
-  actions : HashSet<Action>,
+pub struct MDP<S : State, A : Action> {
+  states : HashSet<S>,
+  actions : HashSet<A>,
   // Link a 4-tuple (state,action,reward,next state) with
   // the probability to get reward and next state when
   // using action in state.
-  dynamics : HashSet<(State,Action,f64,State),f64>,
+  dynamics : HashSet<(S,A,f64,S),f64>,
 }
 
 #[cfg(test)]
