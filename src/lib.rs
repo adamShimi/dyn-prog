@@ -11,7 +11,9 @@ pub trait State {}
 pub trait Action {}
 
 // Deterministic policy
-type Policy<S : State, A : Action> = HashMap<S,A>;
+pub struct Policy<S : State, A : Action> {
+  choice : HashMap<S,A>,
+}
 
 pub struct MDP<S : State, A : Action> {
   states : HashSet<S>,
