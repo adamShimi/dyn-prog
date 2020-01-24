@@ -7,12 +7,34 @@ pub fn find_optimal<S,A>(_prob : MDP<S,A>) -> Policy<S,A>
   unimplemented!("Still everything to do!");
 }
 
+fn policy_evaluation<S,A>(_prob : MDP<S,A>,
+                          _pol : Policy<S,A>,
+                          _thresh : f64) -> StateValue<S>
+  where S : State,
+        A : Action {
+
+  unimplemented!("First block of General Policy Iteration");
+}
+
+fn policy_improvement<S,A>(_prob : MDP<S,A>,
+                           _pol : Policy<S,A>,
+                           _val : StateValue<S>) -> Policy<S,A>
+  where S : State,
+        A : Action {
+
+  unimplemented!("Second block of General Policy Iteration");
+}
+
 pub trait State {}
 pub trait Action {}
 
 // Deterministic policy
 pub struct Policy<S : State, A : Action> {
   choice : HashMap<S,A>,
+}
+
+pub struct StateValue<S : State> {
+  value : HashMap<S,f64>,
 }
 
 pub struct MDP<S : State, A : Action> {
