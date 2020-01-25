@@ -6,18 +6,20 @@ pub fn find_optimal<'a,S,A>(_prob : &MDP<'a,S,A>) -> Policy<'a,A>
   unimplemented!("Still everything to do!");
 }
 
-fn policy_evaluation<'a,S,A>(_prob : &MDP<'a,S,A>,
-                             _pol : &Policy<'a,A>,
-                             _thresh : f64) -> StateValue<'a>
+fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
+                             pol : &Policy<'a,A>,
+                             thresh : f64) -> StateValue
   where S : State,
         A : Action {
 
-  unimplemented!("First block of General Policy Iteration");
+  let mut max_diff = thresh;
+  let mut value = vec![0.0; prob.states.len()];
+  StateValue {value}
 }
 
 fn policy_improvement<'a,S,A>(_prob : &MDP<'a,S,A>,
                               _pol : &Policy<'a,A>,
-                              _val : &StateValue<'a>) -> Policy<'a,A>
+                              _val : &StateValue) -> Policy<'a,A>
   where S : State,
         A : Action {
 
@@ -32,8 +34,8 @@ pub struct Policy<'a, A : Action> {
   choice : &'a [A],
 }
 
-pub struct StateValue<'a> {
-  value : &'a [f64],
+pub struct StateValue {
+  value : Vec<f64>,
 }
 
 pub struct MDP<'a, S : State, A : Action> {
