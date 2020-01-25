@@ -2,15 +2,15 @@ use std::collections::HashMap;
 
 use std::hash::Hash;
 
-pub fn find_optimal<'a,S,A,M>(_prob : &M) -> Policy<'a,A>
+pub fn find_optimal<'a,S,A,M>(_prob : &M) -> Policy<A>
   where S : State,
         A : Action,
         M : MDP<'a,S,A> {
   unimplemented!("Still everything to do!");
 }
 
-fn policy_evaluation<'a,S,A,M>(prob : &'a M,
-                               pol : &'a Policy<'a,A>,
+fn policy_evaluation<'a,S,A,M>(prob : &M,
+                               pol : &Policy<A>,
                                thresh : f64) -> StateValue
   where S : State,
         A : Action,
@@ -39,9 +39,9 @@ fn policy_evaluation<'a,S,A,M>(prob : &'a M,
   StateValue {value}
 }
 
-fn policy_improvement<'a,S,A,M>(_prob : &M,
-                                _pol : &Policy<'a,A>,
-                                _val : &StateValue) -> Policy<'a,A>
+fn policy_improvement<'a,S,A,M>(prob : &M,
+                                pol : &Policy<A>,
+                                val : &StateValue) -> Policy<A>
   where S : State,
         A : Action,
         M : MDP<'a,S,A> {
@@ -53,8 +53,8 @@ pub trait State : Eq + Hash + Copy + 'static {}
 pub trait Action : Eq + Hash + Copy + 'static {}
 
 // Deterministic policy
-pub struct Policy<'a, A : Action> {
-  choice : &'a [A],
+pub struct Policy<A : Action> {
+  choice : Vec<A>,
 }
 
 pub struct StateValue {
