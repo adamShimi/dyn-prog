@@ -66,8 +66,59 @@ pub struct MDP<'a, S : State, A : Action> {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
+
+  use super::*;
+
+  struct GridState {
+    abs : usize,
+    ord : usize,
+  }
+
+  impl State for GridState {}
+
+  enum GridAction {
+    Up,
+    Down,
+    Left,
+    Right,
+  }
+
+  impl Action for GridAction {}
+
+  static GRID_TEST : MDP<'static,GridState,GRidAction> = MDP {
+    states : [GridState {abs : 0, ord: 0},
+              GridState {abs : 0, ord: 1},
+              GridState {abs : 1, ord: 0},
+              GridState {abs : 1, ord: 1}],
+    actions : [GridAction::Up,
+               GridAction::Down,
+               GridAction::Left,
+               GridAction::Right],
+    discount : 1.0,
+    dynamics : [((0,0),(-1,2)),
+                ((0,1),(-1,0)),
+                ((0,2),(-1,0)),
+                ((0,3),(-1,1)),
+
+                ((1,0),(-1,1)),
+                ((1,1),(-1,0)),
+                ((1,2),(-1,1)),
+                ((1,3),(0,3)),
+
+                ((2,0),(0,3)),
+                ((2,1),(-1,2)),
+                ((2,2),(-1,0)),
+                ((2,3),(-1,2)),
+
+                ((3,0),(0,3)),
+                ((3,1),(0,3)),
+                ((3,2),(0,3)),
+                ((3,3),(0,3))].iter().cloned().collect(),
+  };
+
+  #[test]
+  fn it_works() {
+
+      assert_eq!(2 + 2, 4);
+  }
 }
