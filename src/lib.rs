@@ -36,13 +36,28 @@ fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
   StateValue {value}
 }
 
-fn policy_improvement<'a,S,A,M>(_prob : &MDP<'a,S,A>,
-                                _pol : &Policy,
-                                _val : &StateValue) -> Policy
+fn policy_improvement<'a,S,A,M>(prob : &MDP<'a,S,A>,
+                                val : &StateValue) -> Policy
   where S : State,
         A : Action {
 
-  unimplemented!("Second block of General Policy Iteration");
+  let mut new_pol = vec![0; prob.states.len()];
+
+  let mut max_val : f64 = 0.0;
+  let mut max_index : usize = 0;
+  for index in 0..prob.states.len() {
+    for index_action in 0..prob.actions.len() {
+      let (reward,index_next) =
+        prob.dynamics.get(&(index, index_action)).unwrap();
+      let ret = (*reward as f64) + val.value[*index_next];
+      if ret >= max_val + std::f64::EPSILON {
+        max_val = ret;
+        max_index = index_action;
+      }
+    }
+    new_pol[index] = max_index;
+  }
+  Policy {choice : new_pol}
 }
 
 pub trait State {}
