@@ -68,14 +68,6 @@ pub struct MDP<'a, S : State, A : Action> {
   pub dynamics : HashMap<(usize,usize),(isize,usize)>,
 }
 
-fn eq_slice_f64(slice1 : &[f64], slice2 : &[f64]) -> bool {
-
-  slice1.iter()
-        .zip(slice2.iter())
-        .find(|(f1,f2)| (*f1 - *f2).abs() >= std::f64::EPSILON)
-        == None
-}
-
 #[cfg(test)]
 mod tests {
 
@@ -127,6 +119,14 @@ mod tests {
      ((3,1),(0,3)),
      ((3,2),(0,3)),
      ((3,3),(0,3))];
+
+  fn eq_slice_f64(slice1 : &[f64], slice2 : &[f64]) -> bool {
+
+    slice1.iter()
+          .zip(slice2.iter())
+          .find(|(f1,f2)| (*f1 - *f2).abs() >= std::f64::EPSILON)
+          == None
+  }
 
   #[test]
   fn grid_eval() {
