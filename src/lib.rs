@@ -50,7 +50,7 @@ fn policy_improvement<'a,S,A>(prob : &MDP<'a,S,A>,
       let (reward,index_next) =
         prob.dynamics.get(&(index, index_action)).unwrap();
       let ret = (*reward as f64) + val.value[*index_next];
-      if ret >= max_val + std::f64::EPSILON {
+      if index == 0 || (ret >= max_val + std::f64::EPSILON) {
         max_val = ret;
         max_index = index_action;
       }
