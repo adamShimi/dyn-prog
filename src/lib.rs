@@ -36,8 +36,8 @@ fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
   StateValue {value}
 }
 
-fn policy_improvement<'a,S,A,M>(prob : &MDP<'a,S,A>,
-                                val : &StateValue) -> Policy
+fn policy_improvement<'a,S,A>(prob : &MDP<'a,S,A>,
+                              val : &StateValue) -> Policy
   where S : State,
         A : Action {
 
