@@ -1,23 +1,21 @@
 use std::collections::HashMap;
 
-use std::hash::Hash;
-
 pub fn find_optimal<'a,S,A>(_prob : &MDP<'a,S,A>) -> Policy
   where S : State,
         A : Action {
   unimplemented!("Still everything to do!");
 }
 
-fn policy_evaluation<'a,S,A,M>(prob : &MDP<'a,S,A>,
+fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
                                pol : &Policy,
                                thresh : f64) -> StateValue
   where S : State,
         A : Action {
 
-  let mut max_diff = thresh;
+  let mut max_diff : f64 = 0.0;
   let mut value = vec![0.0; prob.states.len()];
 
-  while max_diff >= thresh - std::f64::EPSILON {
+  loop  {
     for index in 0..prob.states.len() {
       let (reward,index_next) = prob.dynamics.get(&(index,
                                                     *pol.choice.get(index).unwrap()
@@ -26,8 +24,14 @@ fn policy_evaluation<'a,S,A,M>(prob : &MDP<'a,S,A>,
                                              .unwrap();
       let update : f64 = (*reward as f64)+prob.discount*value[*index_next];
       max_diff = max_diff.max((update-value[index]).abs());
+      println!("{}",max_diff);
       value[index] = update;
     }
+
+    if (max_diff - thresh).abs() <= std::f64::EPSILON {
+      break;
+    }
+    max_diff = 0.0;
   }
   StateValue {value}
 }
@@ -41,8 +45,8 @@ fn policy_improvement<'a,S,A,M>(_prob : &MDP<'a,S,A>,
   unimplemented!("Second block of General Policy Iteration");
 }
 
-pub trait State : Eq + Hash + Copy {}
-pub trait Action : Eq + Hash + Copy {}
+pub trait State {}
+pub trait Action {}
 
 // Deterministic policy that gives the index of the chosen action
 // for the indexed state.
