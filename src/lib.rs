@@ -58,7 +58,6 @@ pub struct StateValue {
 pub struct MDP<'a, S : State, A : Action> {
   pub states : &'a [S],
   pub actions : &'a [A],
-  pub rewards : &'a [isize],
   pub discount : f64,
   // Link a tuple (index state,index action) deterministically
   // to the tuple (reward, index next state).
