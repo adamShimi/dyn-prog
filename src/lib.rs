@@ -66,11 +66,11 @@ pub trait Action {}
 // Deterministic policy that gives the index of the chosen action
 // for the indexed state.
 pub struct Policy {
-  choice : Vec<usize>,
+  pub choice : Vec<usize>,
 }
 
 pub struct StateValue {
-  value : Vec<f64>,
+  pub value : Vec<f64>,
 }
 
 // Deterministic MDP
