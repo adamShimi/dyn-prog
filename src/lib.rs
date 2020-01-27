@@ -145,10 +145,12 @@ mod tests {
 
   #[test]
   fn grid_eval() {
+
     let mdp = MDP { states : EX_STATES,
                     actions : EX_ACTIONS,
                     discount : EX_DISC,
                     dynamics : EX_DYNAMICS.iter().cloned().collect()};
+
     let optimal_pol = Policy { choice : vec![3,3,0,0] };
     let optimal_val = StateValue { value : vec![-1.0,0.0,0.0,0.0]};
 
@@ -159,5 +161,19 @@ mod tests {
                         )
            );
 
+  }
+
+  #[test]
+  fn grid_improv() {
+
+    let mdp = MDP { states : EX_STATES,
+                    actions : EX_ACTIONS,
+                    discount : EX_DISC,
+                    dynamics : EX_DYNAMICS.iter().cloned().collect()};
+    let optimal_pol = Policy { choice : vec![0,3,0,0] };
+    let optimal_val = StateValue { value : vec![-1.0,0.0,0.0,0.0]};
+
+    println!("{:?}", policy_improvement(&mdp,&optimal_val).choice);
+    assert!( optimal_pol.choice == policy_improvement(&mdp,&optimal_val).choice);
   }
 }
