@@ -49,12 +49,13 @@ fn policy_improvement<'a,S,A>(prob : &MDP<'a,S,A>,
     for index_action in 0..prob.actions.len() {
       let (reward,index_next) =
         prob.dynamics.get(&(index, index_action)).unwrap();
-      let ret = (*reward as f64) + val.value[*index_next];
-      if index == 0 || (ret >= max_val + std::f64::EPSILON) {
+      let ret = (*reward as f64) + prob.discount*val.value[*index_next];
+      if index_action == 0 || (ret >= max_val + std::f64::EPSILON) {
         max_val = ret;
         max_index = index_action;
       }
     }
+    max_val = 0.0;
     new_pol[index] = max_index;
   }
   Policy {choice : new_pol}
