@@ -24,11 +24,10 @@ fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
                                              .unwrap();
       let update : f64 = (*reward as f64)+prob.discount*value[*index_next];
       max_diff = max_diff.max((update-value[index]).abs());
-      println!("{}",max_diff);
       value[index] = update;
     }
 
-    if (max_diff - thresh).abs() <= std::f64::EPSILON {
+    if max_diff.abs() <= thresh {
       break;
     }
     max_diff = 0.0;
