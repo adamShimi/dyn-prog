@@ -112,7 +112,7 @@ mod tests {
                         GridAction::Down,
                         GridAction::Left,
                         GridAction::Right];
-  static EX_DISC : f64 = 1.0;
+  static EX_DISC : f64 = 0.9;
 
   static EX_DYNAMICS : [((usize,usize),(isize,usize));16] =
     [((0,0),(-1,2)),
