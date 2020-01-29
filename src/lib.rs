@@ -4,7 +4,7 @@ pub fn find_optimal<'a,S,A>(prob : &MDP<'a,S,A>) -> Policy
   where S : State,
         A : Action {
 
-  let mut pol = Policy { choice : vec![0; prob.states.len()] };
+  let pol = Policy { choice : vec![0; prob.states.len()] };
   let mut new_pol = Policy { choice : vec![0; prob.states.len()] };
 
   loop {
