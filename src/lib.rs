@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-pub fn find_optimal<'a,S,A>(prob : &MDP<'a,S,A>) -> Policy
+pub fn find_optimal<'a,S,A>(prob : &MDP<'a,S,A>,
+                            thresh : f64) -> Policy
   where S : State,
         A : Action {
 
@@ -13,7 +14,7 @@ pub fn find_optimal<'a,S,A>(prob : &MDP<'a,S,A>) -> Policy
                         policy_improvement(prob,
                                            &policy_evaluation(prob,
                                                               &pol,
-                                                              0.0000001)));
+                                                              thresh)));
     if new_pol == pol {
       break;
     }
@@ -201,6 +202,6 @@ mod tests {
                     dynamics : EX_DYNAMICS.iter().cloned().collect()};
     let optimal_pol = Policy { choice : vec![0,3,0,0] };
 
-    assert!(optimal_pol == find_optimal(&mdp));
+    assert!(optimal_pol == find_optimal(&mdp, 0.1_000_000));
   }
 }
