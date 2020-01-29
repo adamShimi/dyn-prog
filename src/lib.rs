@@ -1,14 +1,29 @@
 use std::collections::HashMap;
 
-pub fn find_optimal<'a,S,A>(_prob : &MDP<'a,S,A>) -> Policy
+pub fn find_optimal<'a,S,A>(prob : &MDP<'a,S,A>) -> Policy
   where S : State,
         A : Action {
-  unimplemented!("Still everything to do!");
+
+  let mut pol = Policy { choice : vec![0; prob.states.len()] };
+  let mut new_pol = Policy { choice : vec![0; prob.states.len()] };
+
+  loop {
+    let pol =
+      std::mem::replace(&mut new_pol,
+                        policy_improvement(prob,
+                                           &policy_evaluation(prob,
+                                                              &pol,
+                                                              0.0000001)));
+    if new_pol == pol {
+      break;
+    }
+  }
+  new_pol
 }
 
 fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
-                               pol : &Policy,
-                               thresh : f64) -> StateValue
+                             pol : &Policy,
+                             thresh : f64) -> StateValue
   where S : State,
         A : Action {
 
@@ -65,6 +80,7 @@ pub trait Action {}
 
 // Deterministic policy that gives the index of the chosen action
 // for the indexed state.
+#[derive(PartialEq)]
 pub struct Policy {
   pub choice : Vec<usize>,
 }
