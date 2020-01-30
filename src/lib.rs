@@ -51,6 +51,24 @@ fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
   StateValue {value}
 }
 
+fn sweep<'a,S,A>(prob : &MDP<'a,S,A>,
+                 pol : &Policy) -> StateValue
+  where S : State,
+        A : Action {
+
+
+  let mut value = vec![0.0; prob.states.len()];
+  for index in 0..prob.states.len() {
+    let (reward,index_next) = prob.dynamics.get(&(index,
+                                                  *pol.choice.get(index).unwrap()
+                                                 )
+                                           )
+                                           .unwrap();
+    value[index] = (*reward as f64)+prob.discount*value[*index_next];
+  }
+  StateValue{value}
+}
+
 fn policy_improvement<'a,S,A>(prob : &MDP<'a,S,A>,
                               val : &StateValue) -> Policy
   where S : State,
