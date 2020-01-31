@@ -52,11 +52,12 @@ fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
 }
 
 fn sweep<'a,S,A>(prob : &MDP<'a,S,A>,
-                 pol : &Policy) -> StateValue
+                 pol : &Policy) -> (StateValue,f64)
   where S : State,
         A : Action {
 
 
+  let mut max_diff : f64 = 0.0;
   let mut value = vec![0.0; prob.states.len()];
   for index in 0..prob.states.len() {
     let (reward,index_next) = prob.dynamics.get(&(index,
@@ -64,9 +65,11 @@ fn sweep<'a,S,A>(prob : &MDP<'a,S,A>,
                                                  )
                                            )
                                            .unwrap();
-    value[index] = (*reward as f64)+prob.discount*value[*index_next];
+    let update : f64 = (*reward as f64)+prob.discount*value[*index_next];
+    max_diff = max_diff.max((update-value[index]).abs());
+    value[index] = update;
   }
-  StateValue{value}
+  (StateValue{value},max_diff)
 }
 
 fn policy_improvement<'a,S,A>(prob : &MDP<'a,S,A>,
@@ -104,7 +107,7 @@ fn value_iteration<'a,S,A>(prob : &MDP<'a,S,A>,
   let mut max_val : f64 = 0.0;
   let mut max_index : usize = 0;
 
-  let val = sweep(prob,pol);
+  let (val,_) = sweep(prob,pol);
 
   for index in 0..prob.states.len() {
     for index_action in 0..prob.actions.len() {
