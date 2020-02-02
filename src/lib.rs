@@ -274,4 +274,16 @@ mod tests {
 
     assert!(optimal_pol == find_optimal(&mdp, 0.1_000_000));
   }
+
+  #[test]
+  fn grid_optimal_value() {
+
+    let mdp = MDP { states : EX_STATES,
+                    actions : EX_ACTIONS,
+                    discount : EX_DISC,
+                    dynamics : EX_DYNAMICS.iter().cloned().collect()};
+    let optimal_pol = Policy { choice : vec![0,3,0,0] };
+
+    assert!(optimal_pol == find_optimal_value(&mdp));
+  }
 }
