@@ -48,31 +48,23 @@ fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
   where S : State,
         A : Action {
 
-  let mut max_diff : f64 = 0.0;
   let mut value = vec![0.0; prob.states.len()];
 
   loop  {
-    for index in 0..prob.states.len() {
-      let (reward,index_next) = prob.dynamics.get(&(index,
-                                                    *pol.choice.get(index).unwrap()
-                                                   )
-                                             )
-                                             .unwrap();
-      let update : f64 = (*reward as f64)+prob.discount*value[*index_next];
-      max_diff = max_diff.max((update-value[index]).abs());
-      value[index] = update;
-    }
+    let (val, max_diff) = sweep(prob,pol,&StateValue {value});
+
+    value = val.value;
 
     if max_diff.abs() <= thresh {
       break;
     }
-    max_diff = 0.0;
   }
   StateValue {value}
 }
 
 fn sweep<'a,S,A>(prob : &MDP<'a,S,A>,
-                 pol : &Policy) -> (StateValue,f64)
+                 pol : &Policy,
+                 val : &StateValue) -> (StateValue,f64)
   where S : State,
         A : Action {
 
@@ -85,8 +77,8 @@ fn sweep<'a,S,A>(prob : &MDP<'a,S,A>,
                                                  )
                                            )
                                            .unwrap();
-    let update : f64 = (*reward as f64)+prob.discount*value[*index_next];
-    max_diff = max_diff.max((update-value[index]).abs());
+    let update : f64 = (*reward as f64)+prob.discount*val.value[*index_next];
+    max_diff = max_diff.max((update-val.value[index]).abs());
     value[index] = update;
   }
   (StateValue{value},max_diff)
@@ -127,7 +119,7 @@ fn value_iteration<'a,S,A>(prob : &MDP<'a,S,A>,
   let mut max_val : f64 = 0.0;
   let mut max_index : usize = 0;
 
-  let (val,_) = sweep(prob,pol);
+  let (val,_) = sweep(prob,pol,&StateValue {value : vec![0.0;prob.states.len()]});
 
   for index in 0..prob.states.len() {
     for index_action in 0..prob.actions.len() {
