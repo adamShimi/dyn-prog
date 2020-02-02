@@ -264,7 +264,8 @@ mod tests {
                     dynamics : EX_DYNAMICS.iter().cloned().collect()};
     let optimal_pol = Policy { choice : vec![0,3,0,0] };
 
-    assert!(optimal_pol == find_optimal(&mdp, 0.1_000_000));
+    assert!(optimal_pol == find_optimal(&mdp,
+                                        GPIVersion::PolicyIteration { thresh : 0.1_000_000}));
   }
 
   #[test]
@@ -276,6 +277,7 @@ mod tests {
                     dynamics : EX_DYNAMICS.iter().cloned().collect()};
     let optimal_pol = Policy { choice : vec![0,3,0,0] };
 
-    assert!(optimal_pol == find_optimal_value(&mdp));
+    assert!(optimal_pol == find_optimal(&mdp,
+                                        GPIVersion::ValueIteration));
   }
 }
