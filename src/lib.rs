@@ -1,45 +1,45 @@
 use std::collections::HashMap;
 
 pub fn find_optimal<'a,S,A>(prob : &MDP<'a,S,A>,
-                            thresh : f64) -> Policy
+                            gpi : GPIVersion) -> Policy
   where S : State,
         A : Action {
 
   let pol = Policy { choice : vec![0; prob.states.len()] };
   let mut new_pol = Policy { choice : vec![0; prob.states.len()] };
 
-  loop {
-    let pol =
-      std::mem::replace(&mut new_pol,
-                        policy_improvement(prob,
-                                           &policy_evaluation(prob,
-                                                              &pol,
-                                                              thresh)));
-    if new_pol == pol {
-      break;
-    }
+  match gpi {
+    GPIVersion::PolicyIteration { thresh } => {
+      loop {
+        let pol =
+          std::mem::replace(&mut new_pol,
+                            policy_improvement(prob,
+                                               &policy_evaluation(prob,
+                                                                  &pol,
+                                                                  thresh)));
+        if new_pol == pol {
+          break;
+        }
+      }
+    },
+    GPIVersion::ValueIteration => {
+      loop {
+        let pol =
+          std::mem::replace(&mut new_pol,
+                            value_iteration(prob,
+                                            &pol));
+        if new_pol == pol {
+          break;
+        }
+      }
+    },
   }
   new_pol
 }
 
-
-pub fn find_optimal_value<'a,S,A>(prob : &MDP<'a,S,A>) -> Policy
-  where S : State,
-        A : Action {
-
-  let pol = Policy { choice : vec![0; prob.states.len()] };
-  let mut new_pol = Policy { choice : vec![0; prob.states.len()] };
-
-  loop {
-    let pol =
-      std::mem::replace(&mut new_pol,
-                        value_iteration(prob,
-                                        &pol));
-    if new_pol == pol {
-      break;
-    }
-  }
-  new_pol
+pub enum GPIVersion {
+  PolicyIteration { thresh : f64},
+  ValueIteration,
 }
 
 fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
