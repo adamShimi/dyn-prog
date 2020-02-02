@@ -6,7 +6,7 @@ A dynamic programming library, computing optimal policies for Markov Decision Pr
 
 ## Next steps
 
-* Finish value iteration.
+* ~~Finish value iteration.~~ Done
 * Unit test value iteration.
 * Abstract away GPI.
 * Extract structure from API.

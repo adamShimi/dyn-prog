@@ -22,6 +22,26 @@ pub fn find_optimal<'a,S,A>(prob : &MDP<'a,S,A>,
   new_pol
 }
 
+
+pub fn find_optimal_value<'a,S,A>(prob : &MDP<'a,S,A>) -> Policy
+  where S : State,
+        A : Action {
+
+  let pol = Policy { choice : vec![0; prob.states.len()] };
+  let mut new_pol = Policy { choice : vec![0; prob.states.len()] };
+
+  loop {
+    let pol =
+      std::mem::replace(&mut new_pol,
+                        value_iteration(prob,
+                                        &pol));
+    if new_pol == pol {
+      break;
+    }
+  }
+  new_pol
+}
+
 fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
                              pol : &Policy,
                              thresh : f64) -> StateValue
