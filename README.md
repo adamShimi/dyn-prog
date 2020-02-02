@@ -6,11 +6,13 @@ A dynamic programming library, computing optimal policies for Markov Decision Pr
 
 ## Next steps
 
-* Define the API.
-* Define the types.
-* Implement the API.
-* Unit test for API.
+* Finish value iteration.
+* Unit test value iteration.
+* Abstract away GPI.
 * Extract structure from API.
+* Transition to stochastic problems and policies.
+* Write benchmarks.
+* Optimize.
 * Write examples with hardcoded MDP and openAI gym problems.
 * Write comments.
 * Write documentation.
