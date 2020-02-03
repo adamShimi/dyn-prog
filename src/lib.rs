@@ -114,28 +114,11 @@ fn value_iteration<'a,S,A>(prob : &MDP<'a,S,A>,
   where S : State,
         A : Action {
 
-  let mut new_pol = vec![0; prob.states.len()];
-
-  let mut max_val : f64 = 0.0;
-  let mut max_index : usize = 0;
-
   let (val,_) = sweep(prob,pol,&StateValue {value : vec![0.0;prob.states.len()]});
 
-  for index in 0..prob.states.len() {
-    for index_action in 0..prob.actions.len() {
-      let (reward,index_next) =
-        prob.dynamics.get(&(index, index_action)).unwrap();
-      let ret = (*reward as f64) + prob.discount*val.value[*index_next];
-      if index_action == 0 || (ret >= max_val + std::f64::EPSILON) {
-        max_val = ret;
-        max_index = index_action;
-      }
-    }
-    max_val = 0.0;
-    new_pol[index] = max_index;
-  }
-  Policy {choice : new_pol}
+  policy_improvement(prob,&val)
 }
+
 
 
 pub trait State {}
