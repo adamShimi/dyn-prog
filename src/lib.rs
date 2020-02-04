@@ -223,7 +223,7 @@ mod tests {
                     discount : EX_DISC,
                     dynamics : EX_DYNAMICS.iter().cloned().collect()};
 
-    let optimal_pol = Policy { choice : vec![3,3,0,0] };
+    let optimal_pol = Policy { choice : vec![vec![3],vec![3],vec![0],vec![0]] };
     let optimal_val = StateValue { value : vec![-1.0,0.0,0.0,0.0]};
 
     assert!(eq_slice_f64(&optimal_val.value,
@@ -242,10 +242,10 @@ mod tests {
                     actions : EX_ACTIONS,
                     discount : EX_DISC,
                     dynamics : EX_DYNAMICS.iter().cloned().collect()};
-    let optimal_pol = Policy { choice : vec![0,3,0,0] };
+    let optimal_pol = Policy { choice : vec![vec![0,3],vec![3],vec![0],vec![0,1,2,3]] };
     let optimal_val = StateValue { value : vec![-1.0,0.0,0.0,0.0]};
 
-    assert!( optimal_pol.choice == policy_improvement(&mdp,&optimal_val).choice);
+    assert_eq!(optimal_pol.choice,policy_improvement(&mdp,&optimal_val).choice);
   }
 
   #[test]
@@ -255,10 +255,10 @@ mod tests {
                     actions : EX_ACTIONS,
                     discount : EX_DISC,
                     dynamics : EX_DYNAMICS.iter().cloned().collect()};
-    let optimal_pol = Policy { choice : vec![0,3,0,0] };
+    let optimal_pol = Policy { choice : vec![vec![0,3],vec![3],vec![0],vec![0,1,2,3]] };
 
-    assert!(optimal_pol == find_optimal(&mdp,
-                                        GPIVersion::PolicyIteration { thresh : 0.1_000_000}));
+    assert_eq!(optimal_pol, find_optimal(&mdp,
+                                         GPIVersion::PolicyIteration { thresh : 0.1_000_000}));
   }
 
   #[test]
@@ -268,9 +268,9 @@ mod tests {
                     actions : EX_ACTIONS,
                     discount : EX_DISC,
                     dynamics : EX_DYNAMICS.iter().cloned().collect()};
-    let optimal_pol = Policy { choice : vec![0,3,0,0] };
+    let optimal_pol = Policy { choice : vec![vec![0,3],vec![3],vec![0],vec![0,1,2,3]] };
 
-    assert!(optimal_pol == find_optimal(&mdp,
+    assert_eq!(optimal_pol,find_optimal(&mdp,
                                         GPIVersion::ValueIteration));
   }
 }
