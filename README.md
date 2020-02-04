@@ -9,7 +9,7 @@ A dynamic programming library, computing optimal policies for Markov Decision Pr
 * ~~Finish value iteration.~~ Done
 * ~~Unit test value iteration.~~ Done
 * ~~Abstract away GPI.~~ Done
-* Transition to stochastic policies.
+* ~~Transition to stochastic policies.~~ Done
 * Transition to stochastic problems.
 * Extract structure from API.
 * Write benchmarks.
