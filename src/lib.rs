@@ -5,8 +5,10 @@ pub fn find_optimal<'a,S,A>(prob : &MDP<'a,S,A>,
   where S : State,
         A : Action {
 
-  let pol = Policy { choice : vec![0; prob.states.len()] };
-  let mut new_pol = Policy { choice : vec![0; prob.states.len()] };
+  let pol = Policy { choice : vec![(0..prob.actions.len()).collect::<Vec<usize>>();
+                                   prob.states.len()] };
+  let mut new_pol = Policy { choice : vec![(0..prob.actions.len()).collect::<Vec<usize>>();
+                                           prob.states.len()] };
 
   match gpi {
     GPIVersion::PolicyIteration { thresh } => {
@@ -71,15 +73,20 @@ fn sweep<'a,S,A>(prob : &MDP<'a,S,A>,
 
   let mut max_diff : f64 = 0.0;
   let mut value = vec![0.0; prob.states.len()];
+  let mut update : f64 = 0.0;
   for index in 0..prob.states.len() {
-    let (reward,index_next) = prob.dynamics.get(&(index,
-                                                  *pol.choice.get(index).unwrap()
-                                                 )
-                                           )
-                                           .unwrap();
-    let update : f64 = (*reward as f64)+prob.discount*val.value[*index_next];
+    let factor = 1.0/(pol.choice.get(index).unwrap().len() as f64);
+    for index_action in pol.choice.get(index).unwrap() {
+      let (reward,index_next) = prob.dynamics.get(&(index,
+                                                    *index_action
+                                                   )
+                                             )
+                                             .unwrap();
+      update += factor*((*reward as f64)+prob.discount*val.value[*index_next]);
+    }
     max_diff = max_diff.max((update-val.value[index]).abs());
     value[index] = update;
+    update = 0.0;
   }
   (StateValue{value},max_diff)
 }
@@ -89,22 +96,25 @@ fn policy_improvement<'a,S,A>(prob : &MDP<'a,S,A>,
   where S : State,
         A : Action {
 
-  let mut new_pol = vec![0; prob.states.len()];
+  let mut new_pol = vec![Vec::new(); prob.states.len()];
 
   let mut max_val : f64 = 0.0;
-  let mut max_index : usize = 0;
+  let mut max_indexes : Vec<usize> = Vec::new();
   for index in 0..prob.states.len() {
     for index_action in 0..prob.actions.len() {
       let (reward,index_next) =
         prob.dynamics.get(&(index, index_action)).unwrap();
       let ret = (*reward as f64) + prob.discount*val.value[*index_next];
-      if index_action == 0 || (ret >= max_val + std::f64::EPSILON) {
+      if index_action == 0 || (ret > max_val + std::f64::EPSILON) {
         max_val = ret;
-        max_index = index_action;
+        max_indexes.clear();
+        max_indexes.push(index_action);
+      } else if (ret-max_val).abs() <= std::f64::EPSILON {
+        max_indexes.push(index_action);
       }
     }
     max_val = 0.0;
-    new_pol[index] = max_index;
+    new_pol[index] = std::mem::replace(&mut max_indexes,Vec::new());
   }
   Policy {choice : new_pol}
 }
@@ -126,9 +136,9 @@ pub trait Action {}
 
 // Deterministic policy that gives the index of the chosen action
 // for the indexed state.
-#[derive(PartialEq)]
+#[derive(PartialEq,Debug)]
 pub struct Policy {
-  pub choice : Vec<usize>,
+  pub choice : Vec<Vec<usize>>,
 }
 
 pub struct StateValue {
