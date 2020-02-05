@@ -77,12 +77,14 @@ fn sweep<'a,S,A>(prob : &MDP<'a,S,A>,
   for index in 0..prob.states.len() {
     let factor = 1.0/(pol.choice.get(index).unwrap().len() as f64);
     for index_action in pol.choice.get(index).unwrap() {
-      let (reward,index_next) = prob.dynamics.get(&(index,
-                                                    *index_action
-                                                   )
-                                             )
-                                             .unwrap();
-      update += factor*((*reward as f64)+prob.discount*val.value[*index_next]);
+      let dyna = prob.dynamics.get(&(index, *index_action)).unwrap();
+      let nb_choice = dyna.len();
+      update += dyna.iter()
+                    .map(|(proba,reward,index_next)|
+                      (*proba as f64/nb_choice as f64)
+                        *((*reward as f64)+prob.discount*val.value[*index_next])
+                    )
+                    .sum::<f64>()*factor;
     }
     max_diff = max_diff.max((update-val.value[index]).abs());
     value[index] = update;
@@ -102,9 +104,14 @@ fn policy_improvement<'a,S,A>(prob : &MDP<'a,S,A>,
   let mut max_indexes : Vec<usize> = Vec::new();
   for index in 0..prob.states.len() {
     for index_action in 0..prob.actions.len() {
-      let (reward,index_next) =
-        prob.dynamics.get(&(index, index_action)).unwrap();
-      let ret = (*reward as f64) + prob.discount*val.value[*index_next];
+      let dyna = prob.dynamics.get(&(index, index_action)).unwrap();
+      let nb_choice = dyna.len();
+      let ret = dyna.iter()
+                    .map(|(proba,reward,index_next)|
+                      (*proba as f64/nb_choice as f64)
+                        *((*reward as f64)+prob.discount*val.value[*index_next])
+                    )
+                    .sum();
       if index_action == 0 || (ret > max_val + std::f64::EPSILON) {
         max_val = ret;
         max_indexes.clear();
@@ -149,9 +156,12 @@ pub struct MDP<'a, S : State, A : Action> {
   pub states : &'a [S],
   pub actions : &'a [A],
   pub discount : f64,
-  // Link a tuple (index state,index action) deterministically
-  // to the tuple (reward, index next state).
-  pub dynamics : HashMap<(usize,usize),(isize,usize)>,
+  // Link a tuple (index state,index action) to the list of
+  // triples (proba, reward, index next state),
+  // where the proba is the numerator of the fraction
+  // giving the probability of the state, where the denominator
+  // is the number of states.
+  pub dynamics : HashMap<(usize,usize),&'a [(usize,isize,usize)]>,
 }
 
 #[cfg(test)]
