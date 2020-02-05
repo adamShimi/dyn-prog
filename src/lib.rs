@@ -134,8 +134,7 @@ fn value_iteration<'a,S,A>(prob : &MDP<'a,S,A>,
 pub trait State {}
 pub trait Action {}
 
-// Deterministic policy that gives the index of the chosen action
-// for the indexed state.
+// Stochastic policy that gives the list of index of optimal actions.
 #[derive(PartialEq,Debug)]
 pub struct Policy {
   pub choice : Vec<Vec<usize>>,
