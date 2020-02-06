@@ -1,4 +1,6 @@
-use std::collections::HashMap;
+mod mdp;
+
+use mdp::{State, Action, MDP};
 
 pub fn find_optimal<'a,S,A>(prob : &MDP<'a,S,A>,
                             gpi : GPIVersion) -> Policy
@@ -138,9 +140,6 @@ fn value_iteration<'a,S,A>(prob : &MDP<'a,S,A>,
 
 
 
-pub trait State {}
-pub trait Action {}
-
 // Stochastic policy that gives the list of index of optimal actions.
 #[derive(PartialEq,Debug)]
 pub struct Policy {
@@ -151,18 +150,6 @@ pub struct StateValue {
   pub value : Vec<f64>,
 }
 
-// Deterministic MDP
-pub struct MDP<'a, S : State, A : Action> {
-  pub states : &'a [S],
-  pub actions : &'a [A],
-  pub discount : f64,
-  // Link a tuple (index state,index action) to the list of
-  // triples (proba, reward, index next state),
-  // where the proba is the numerator of the fraction
-  // giving the probability of the state, where the denominator
-  // is the number of states.
-  pub dynamics : HashMap<(usize,usize),&'a [(usize,isize,usize)]>,
-}
 
 #[cfg(test)]
 mod tests {

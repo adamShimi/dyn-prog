@@ -11,7 +11,7 @@ A dynamic programming library, computing optimal policies for Markov Decision Pr
 * ~~Abstract away GPI.~~ Done
 * ~~Transition to stochastic policies.~~ Done
 * ~~Transition to stochastic problems.~~ Done
-* Extract structure from API.
+* ~~Extract structure from API.~~ Done
 * Write benchmarks.
 * Optimize.
 * Write examples with hardcoded MDP and openAI gym problems.
