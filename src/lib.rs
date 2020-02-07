@@ -155,22 +155,8 @@ pub struct StateValue {
 mod tests {
 
   use super::*;
+  use crate::mdp::grid_world::{GridState,GridAction};
 
-  struct GridState {
-    abs : usize,
-    ord : usize,
-  }
-
-  impl State for GridState {}
-
-  enum GridAction {
-    Up,
-    Down,
-    Left,
-    Right,
-  }
-
-  impl Action for GridAction {}
 
   static EX_STATES : &[GridState] = &[GridState {abs : 0, ord: 0},
                                       GridState {abs : 0, ord: 1},

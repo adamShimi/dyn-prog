@@ -15,3 +15,24 @@ pub struct MDP<'a, S : State, A : Action> {
   // is the number of states.
   pub dynamics : HashMap<(usize,usize),&'a [(usize,isize,usize)]>,
 }
+
+pub mod grid_world {
+
+  use super::{State,Action};
+
+  pub struct GridState {
+    pub abs : usize,
+    pub ord : usize,
+  }
+
+  impl State for GridState {}
+
+  pub enum GridAction {
+    Up,
+    Down,
+    Left,
+    Right,
+  }
+
+  impl Action for GridAction {}
+}
