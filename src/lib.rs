@@ -155,44 +155,13 @@ pub struct StateValue {
   pub value : Vec<f64>,
 }
 
-
 #[cfg(test)]
 mod tests {
 
   use super::*;
-  use crate::mdp::grid_world::{GridState,GridAction};
+  use crate::mdp::grid_world::{GridWorld,GridState};
 
-
-  static EX_STATES : &[GridState] = &[GridState {abs : 0, ord: 0},
-                                      GridState {abs : 0, ord: 1},
-                                      GridState {abs : 1, ord: 0},
-                                      GridState {abs : 1, ord: 1}];
-  static EX_ACTIONS : &[GridAction] = &[GridAction::Up,
-                        GridAction::Down,
-                        GridAction::Left,
-                        GridAction::Right];
   static EX_DISC : f64 = 0.9;
-
-  static EX_DYNAMICS : [((usize,usize),&[(usize,isize,usize)]);16] =
-    [((0,0),&[(1,-1,2)]),
-     ((0,1),&[(1,-1,0)]),
-     ((0,2),&[(1,-1,0)]),
-     ((0,3),&[(1,-1,1)]),
-
-     ((1,0),&[(1,-1,1)]),
-     ((1,1),&[(1,-1,0)]),
-     ((1,2),&[(1,-1,1)]),
-     ((1,3),&[(1,0,3)]),
-
-     ((2,0),&[(1,0,3)]),
-     ((2,1),&[(1,-1,2)]),
-     ((2,2),&[(1,-1,0)]),
-     ((2,3),&[(1,-1,2)]),
-
-     ((3,0),&[(1,0,3)]),
-     ((3,1),&[(1,0,3)]),
-     ((3,2),&[(1,0,3)]),
-     ((3,3),&[(1,0,3)])];
 
   fn eq_slice_f64(slice1 : &[f64], slice2 : &[f64]) -> bool {
 
@@ -205,44 +174,33 @@ mod tests {
   #[test]
   fn grid_eval() {
 
-    let mdp = MDP { states : EX_STATES,
-                    actions : EX_ACTIONS,
-                    discount : EX_DISC,
-                    dynamics : EX_DYNAMICS.iter().cloned().collect()};
-
+    let mdp = GridWorld::new(2,2,GridState{row:0,col:0},GridState{row:1,col:1},EX_DISC);
     let optimal_pol = Policy { choice : vec![vec![3],vec![3],vec![0],vec![0]] };
-    let optimal_val = StateValue { value : vec![-1.0,0.0,0.0,0.0]};
+    let val = StateValue { value : vec![-1.0,0.0,0.0,0.0]};
 
-    assert!(eq_slice_f64(&optimal_val.value,
+    assert!(eq_slice_f64(&val.value,
                          &policy_evaluation(&mdp,
                                             &optimal_pol,
-                                            std::f64::EPSILON).value
-                        )
-           );
+                                            0.01).value
+                        ));
 
   }
 
   #[test]
   fn grid_improv() {
 
-    let mdp = MDP { states : EX_STATES,
-                    actions : EX_ACTIONS,
-                    discount : EX_DISC,
-                    dynamics : EX_DYNAMICS.iter().cloned().collect()};
-    let optimal_pol = Policy { choice : vec![vec![0,3],vec![3],vec![0],vec![0,1,2,3]] };
-    let optimal_val = StateValue { value : vec![-1.0,0.0,0.0,0.0]};
+    let mdp = GridWorld::new(2,2,GridState{row:0,col:0},GridState{row:1,col:1},EX_DISC);
+    let improved_pol = Policy { choice : vec![vec![0,3],vec![3],vec![0],vec![0,1,2,3]] };
+    let val = StateValue { value : vec![-1.0,0.0,0.0,0.0]};
 
-    assert_eq!(optimal_pol.choice,policy_improvement(&mdp,&optimal_val).choice);
+    assert_eq!(improved_pol.choice,policy_improvement(&mdp,&val).choice);
   }
 
   #[test]
   fn grid_optimal() {
 
-    let mdp = MDP { states : EX_STATES,
-                    actions : EX_ACTIONS,
-                    discount : EX_DISC,
-                    dynamics : EX_DYNAMICS.iter().cloned().collect()};
-    let optimal_pol = Policy { choice : vec![vec![0,3],vec![3],vec![0],vec![0,1,2,3]] };
+    let mdp = GridWorld::new(2,2,GridState{row:0,col:0},GridState{row:1,col:1},EX_DISC);
+    let optimal_pol = Policy { choice : vec![vec![0,3],vec![0],vec![3],vec![0,1,2,3]] };
 
     assert_eq!(optimal_pol, find_optimal(&mdp,
                                          GPIVersion::PolicyIteration { thresh : 0.1_000_000}));
@@ -251,11 +209,8 @@ mod tests {
   #[test]
   fn grid_optimal_value() {
 
-    let mdp = MDP { states : EX_STATES,
-                    actions : EX_ACTIONS,
-                    discount : EX_DISC,
-                    dynamics : EX_DYNAMICS.iter().cloned().collect()};
-    let optimal_pol = Policy { choice : vec![vec![0,3],vec![3],vec![0],vec![0,1,2,3]] };
+    let mdp = GridWorld::new(2,2,GridState{row:0,col:0},GridState{row:1,col:1},EX_DISC);
+    let optimal_pol = Policy { choice : vec![vec![0,3],vec![0],vec![3],vec![0,1,2,3]] };
 
     assert_eq!(optimal_pol,find_optimal(&mdp,
                                         GPIVersion::ValueIteration));
