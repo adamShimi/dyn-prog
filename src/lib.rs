@@ -2,15 +2,16 @@ mod mdp;
 
 use mdp::{State, Action, MDP};
 
-pub fn find_optimal<'a,S,A>(prob : &MDP<'a,S,A>,
-                            gpi : GPIVersion) -> Policy
+pub fn find_optimal<S,A,M>(prob : &M,
+                           gpi : GPIVersion) -> Policy
   where S : State,
-        A : Action {
+        A : Action,
+        M : MDP<S,A> {
 
-  let pol = Policy { choice : vec![(0..prob.actions.len()).collect::<Vec<usize>>();
-                                   prob.states.len()] };
-  let mut new_pol = Policy { choice : vec![(0..prob.actions.len()).collect::<Vec<usize>>();
-                                           prob.states.len()] };
+  let pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
+                                   prob.nb_states()] };
+  let mut new_pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
+                                           prob.nb_states()] };
 
   match gpi {
     GPIVersion::PolicyIteration { thresh } => {
@@ -46,13 +47,14 @@ pub enum GPIVersion {
   ValueIteration,
 }
 
-fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
-                             pol : &Policy,
-                             thresh : f64) -> StateValue
+fn policy_evaluation<S,A,M>(prob : &M,
+                            pol : &Policy,
+                            thresh : f64) -> StateValue
   where S : State,
-        A : Action {
+        A : Action,
+        M : MDP<S,A> {
 
-  let mut value = vec![0.0; prob.states.len()];
+  let mut value = vec![0.0; prob.nb_states()];
 
   loop  {
     let (val, max_diff) = sweep(prob,pol,&StateValue {value});
@@ -66,25 +68,26 @@ fn policy_evaluation<'a,S,A>(prob : &MDP<'a,S,A>,
   StateValue {value}
 }
 
-fn sweep<'a,S,A>(prob : &MDP<'a,S,A>,
-                 pol : &Policy,
-                 val : &StateValue) -> (StateValue,f64)
+fn sweep<S,A,M>(prob : &M,
+                pol : &Policy,
+                val : &StateValue) -> (StateValue,f64)
   where S : State,
-        A : Action {
+        A : Action,
+        M : MDP<S,A> {
 
 
   let mut max_diff : f64 = 0.0;
-  let mut value = vec![0.0; prob.states.len()];
+  let mut value = vec![0.0; prob.nb_states()];
   let mut update : f64 = 0.0;
-  for index in 0..prob.states.len() {
+  for index in 0..prob.nb_states() {
     let factor = 1.0/(pol.choice.get(index).unwrap().len() as f64);
     for index_action in pol.choice.get(index).unwrap() {
-      let dyna = prob.dynamics.get(&(index, *index_action)).unwrap();
+      let dyna = prob.dynamics(index, *index_action);
       let nb_choice = dyna.len();
       update += dyna.iter()
                     .map(|(proba,reward,index_next)|
                       (*proba as f64/nb_choice as f64)
-                        *((*reward as f64)+prob.discount*val.value[*index_next])
+                        *((*reward as f64)+prob.discount()*val.value[*index_next])
                     )
                     .sum::<f64>()*factor;
     }
@@ -95,23 +98,24 @@ fn sweep<'a,S,A>(prob : &MDP<'a,S,A>,
   (StateValue{value},max_diff)
 }
 
-fn policy_improvement<'a,S,A>(prob : &MDP<'a,S,A>,
-                              val : &StateValue) -> Policy
+fn policy_improvement<S,A,M>(prob : &M,
+                             val : &StateValue) -> Policy
   where S : State,
-        A : Action {
+        A : Action,
+        M : MDP<S,A> {
 
-  let mut new_pol = vec![Vec::new(); prob.states.len()];
+  let mut new_pol = vec![Vec::new(); prob.nb_states()];
 
   let mut max_val : f64 = 0.0;
   let mut max_indexes : Vec<usize> = Vec::new();
-  for index in 0..prob.states.len() {
-    for index_action in 0..prob.actions.len() {
-      let dyna = prob.dynamics.get(&(index, index_action)).unwrap();
+  for index in 0..prob.nb_states() {
+    for index_action in 0..prob.nb_actions() {
+      let dyna = prob.dynamics(index, index_action);
       let nb_choice = dyna.len();
       let ret = dyna.iter()
                     .map(|(proba,reward,index_next)|
                       (*proba as f64/nb_choice as f64)
-                        *((*reward as f64)+prob.discount*val.value[*index_next])
+                        *((*reward as f64)+prob.discount()*val.value[*index_next])
                     )
                     .sum();
       if index_action == 0 || (ret > max_val + std::f64::EPSILON) {
@@ -128,12 +132,13 @@ fn policy_improvement<'a,S,A>(prob : &MDP<'a,S,A>,
   Policy {choice : new_pol}
 }
 
-fn value_iteration<'a,S,A>(prob : &MDP<'a,S,A>,
-                           pol : &Policy) -> Policy
+fn value_iteration<S,A,M>(prob : &M,
+                          pol : &Policy) -> Policy
   where S : State,
-        A : Action {
+        A : Action,
+        M : MDP<S,A> {
 
-  let (val,_) = sweep(prob,pol,&StateValue {value : vec![0.0;prob.states.len()]});
+  let (val,_) = sweep(prob,pol,&StateValue {value : vec![0.0;prob.nb_states()]});
 
   policy_improvement(prob,&val)
 }
