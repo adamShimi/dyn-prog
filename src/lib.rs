@@ -190,7 +190,7 @@ mod tests {
   fn grid_improv() {
 
     let mdp = GridWorld::new(2,2,GridState{row:0,col:0},GridState{row:1,col:1},EX_DISC);
-    let improved_pol = Policy { choice : vec![vec![0,3],vec![3],vec![0],vec![0,1,2,3]] };
+    let improved_pol = Policy { choice : vec![vec![0,3],vec![0,1,3],vec![0,2,3],vec![0,1,2,3]] };
     let val = StateValue { value : vec![-1.0,0.0,0.0,0.0]};
 
     assert_eq!(improved_pol.choice,policy_improvement(&mdp,&val).choice);
