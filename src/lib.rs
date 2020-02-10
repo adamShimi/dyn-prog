@@ -175,13 +175,13 @@ mod tests {
   fn grid_eval() {
 
     let mdp = GridWorld::new(2,2,GridState{row:0,col:0},GridState{row:1,col:1},EX_DISC);
-    let optimal_pol = Policy { choice : vec![vec![3],vec![3],vec![0],vec![0]] };
-    let val = StateValue { value : vec![-1.0,0.0,0.0,0.0]};
+    let optimal_pol = Policy { choice : vec![vec![3],vec![0],vec![3],vec![0]] };
+    let val = StateValue { value : vec![-1.9,-1.0,-1.0,0.0]};
 
     assert!(eq_slice_f64(&val.value,
                          &policy_evaluation(&mdp,
                                             &optimal_pol,
-                                            0.01).value
+                                            std::f64::EPSILON).value
                         ));
 
   }
