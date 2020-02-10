@@ -8,10 +8,11 @@ pub fn find_optimal<S,A,M>(prob : &M,
         A : Action,
         M : MDP<S,A> {
 
-  let pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
-                                   prob.nb_states()] };
+  let mut pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
+                                       prob.nb_states()] };
   let mut new_pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
                                            prob.nb_states()] };
+  let mut val = StateValue { value : vec![0.0; prob.nb_states()] };
 
   match gpi {
     GPIVersion::PolicyIteration { thresh } => {
@@ -29,11 +30,12 @@ pub fn find_optimal<S,A,M>(prob : &M,
     },
     GPIVersion::ValueIteration => {
       loop {
-        let pol =
-          std::mem::replace(&mut new_pol,
-                            value_iteration(prob,
-                                            &pol));
-        if new_pol == pol {
+        new_pol = std::mem::replace(&mut pol,new_pol);
+        let (pol_next, new_val) = value_iteration(prob, &pol, &val);
+        std::mem::replace(&mut new_pol, pol_next);
+        std::mem::replace(&mut val, new_val);
+
+        if new_pol.choice == pol.choice {
           break;
         }
       }
@@ -133,14 +135,15 @@ fn policy_improvement<S,A,M>(prob : &M,
 }
 
 fn value_iteration<S,A,M>(prob : &M,
-                          pol : &Policy) -> Policy
+                          pol : &Policy,
+                          val : &StateValue) -> (Policy,StateValue)
   where S : State,
         A : Action,
         M : MDP<S,A> {
 
-  let (val,_) = sweep(prob,pol,&StateValue {value : vec![0.0;prob.nb_states()]});
+  let (new_val,_) = sweep(prob,pol,val);
 
-  policy_improvement(prob,&val)
+  (policy_improvement(prob,&new_val),new_val)
 }
 
 
