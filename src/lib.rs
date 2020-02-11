@@ -17,12 +17,12 @@ pub fn find_optimal<S,A,M>(prob : &M,
   match gpi {
     GPIVersion::PolicyIteration { thresh } => {
       loop {
-        let pol =
-          std::mem::replace(&mut new_pol,
-                            policy_improvement(prob,
-                                               &policy_evaluation(prob,
-                                                                  &pol,
-                                                                  thresh)));
+        new_pol = std::mem::replace(&mut pol,new_pol);
+        std::mem::replace(&mut new_pol,
+                          policy_improvement(prob,
+                                             &policy_evaluation(prob,
+                                                                &pol,
+                                                                thresh)));
         if new_pol == pol {
           break;
         }
