@@ -1,4 +1,4 @@
-mod mdp;
+pub mod mdp;
 
 use mdp::{State, Action, MDP};
 
@@ -44,6 +44,7 @@ pub fn find_optimal<S,A,M>(prob : &M,
   new_pol
 }
 
+#[derive(Clone,Copy)]
 pub enum GPIVersion {
   PolicyIteration { thresh : f64},
   ValueIteration,
