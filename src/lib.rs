@@ -89,10 +89,10 @@ fn sweep<S,A,M>(prob : &M,
       let nb_choice = dyna.len();
       update += dyna.iter()
                     .map(|(proba,reward,index_next)|
-                      (*proba as f64/nb_choice as f64)
+                      (*proba as f64)
                         *((*reward as f64)+prob.discount()*val.value[*index_next])
                     )
-                    .sum::<f64>()*factor;
+                    .sum::<f64>()*(factor/nb_choice as f64);
     }
     max_diff = max_diff.max((update-val.value[index]).abs());
     value[index] = update;
@@ -117,10 +117,10 @@ fn policy_improvement<S,A,M>(prob : &M,
       let nb_choice = dyna.len();
       let ret = dyna.iter()
                     .map(|(proba,reward,index_next)|
-                      (*proba as f64/nb_choice as f64)
+                      (*proba as f64)
                         *((*reward as f64)+prob.discount()*val.value[*index_next])
                     )
-                    .sum();
+                    .sum::<f64>()/(nb_choice as f64);
       if index_action == 0 || (ret > max_val + std::f64::EPSILON) {
         max_val = ret;
         max_indexes.clear();
