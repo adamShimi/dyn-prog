@@ -28,6 +28,18 @@ pub struct TabMDP<'a, S : State, A : Action> {
   pub dynamics : HashMap<(usize,usize),&'a [(usize,isize,usize)]>,
 }
 
+
+// Stochastic policy that gives the list of index of optimal actions.
+#[derive(PartialEq,Debug)]
+pub struct Policy {
+  pub choice : Vec<Vec<usize>>,
+}
+
+pub struct StateValue {
+  pub value : Vec<f64>,
+}
+
+
 pub mod grid_world {
 
   use super::{State,Action,MDP};
