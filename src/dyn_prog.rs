@@ -82,12 +82,12 @@ fn policy_improvement<S,A,M>(prob : &M,
 
   let mut new_pol = vec![Vec::new(); prob.nb_states()];
 
-  let mut max_val : f64 = 0.0;
+  let mut max_val : f64 = std::f64::MIN;
   let mut max_indexes : Vec<usize> = Vec::new();
   for index in 0..prob.nb_states() {
     for index_action in 0..prob.nb_actions() {
       let ret = get_update(prob,val,index,index_action);
-      if index_action == 0 || (ret > max_val + std::f64::EPSILON) {
+      if (ret > max_val + std::f64::EPSILON) {
         max_val = ret;
         max_indexes.clear();
         max_indexes.push(index_action);
@@ -95,7 +95,7 @@ fn policy_improvement<S,A,M>(prob : &M,
         max_indexes.push(index_action);
       }
     }
-    max_val = 0.0;
+    max_val = std::f64::MIN;
     new_pol[index] = std::mem::replace(&mut max_indexes,Vec::new());
   }
   Policy {choice : new_pol}
