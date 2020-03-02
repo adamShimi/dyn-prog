@@ -128,15 +128,15 @@ fn sweep<S,A,M>(prob : &M,
 
   let mut max_diff : f64 = 0.0;
   let mut value = vec![0.0; prob.nb_states()];
-  let mut update : f64 = 0.0;
   for index in 0..prob.nb_states() {
-    let factor = 1.0/(pol.choice.get(index).unwrap().len() as f64);
-    for index_action in pol.choice.get(index).unwrap() {
-      update += factor*get_update(prob,val,index,*index_action)
-    }
+    let choices = pol.choice.get(index).unwrap();
+    let update = choices.iter()
+                        .map(|index_action|
+                          get_update(prob,val,index,*index_action)
+                        )
+                        .sum::<f64>()/(choices.len() as f64);
     max_diff = max_diff.max((update-val.value[index]).abs());
     value[index] = update;
-    update = 0.0;
   }
   (StateValue{value},max_diff)
 }
