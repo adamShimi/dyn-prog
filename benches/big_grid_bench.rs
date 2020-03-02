@@ -1,7 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use dyn_prog::{find_optimal,GPIVersion};
-use dyn_prog::mdp::MDP;
-use dyn_prog::mdp::grid_world::{GridWorld,GridState};
+use tab_rl::{find_optimal,GPIVersion};
+use tab_rl::mdp::grid_world::{GridWorld,GridState};
 
 pub fn criterion_benchmark(c: &mut Criterion) {
     let mdp = GridWorld::new(10,10,GridState{row:0,col:0},GridState{row:8,col:4},0.9);
