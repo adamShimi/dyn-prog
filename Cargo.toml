@@ -1,5 +1,5 @@
 [package]
-name = "dyn-prog"
+name = "tab-rl"
 version = "0.1.0"
 authors = ["Adam Shimi <adam.shimi@toulouse-inp.fr>"]
 edition = "2018"
