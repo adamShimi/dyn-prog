@@ -1,5 +1,7 @@
 use crate::mdp::{State, Action, MDP, StateValue, Policy};
 
+// Public API
+
 pub fn run_policy_iteration<S,A,M>(prob : &M,
                                thresh : f64) -> Policy
   where S : State,
@@ -10,7 +12,6 @@ pub fn run_policy_iteration<S,A,M>(prob : &M,
                                        prob.nb_states()] };
   let mut new_pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
                                            prob.nb_states()] };
-  let mut val = StateValue { value : vec![0.0; prob.nb_states()] };
 
   loop {
     new_pol = std::mem::replace(&mut pol,new_pol);
@@ -50,6 +51,8 @@ pub fn run_value_iteration<S,A,M>(prob : &M) -> Policy
   new_pol
 }
 
+// Policy iteration
+
 fn policy_evaluation<S,A,M>(prob : &M,
                             pol : &Policy,
                             thresh : f64) -> StateValue
@@ -71,36 +74,6 @@ fn policy_evaluation<S,A,M>(prob : &M,
   StateValue {value}
 }
 
-fn sweep<S,A,M>(prob : &M,
-                pol : &Policy,
-                val : &StateValue) -> (StateValue,f64)
-  where S : State,
-        A : Action,
-        M : MDP<S,A> {
-
-
-  let mut max_diff : f64 = 0.0;
-  let mut value = vec![0.0; prob.nb_states()];
-  let mut update : f64 = 0.0;
-  for index in 0..prob.nb_states() {
-    let factor = 1.0/(pol.choice.get(index).unwrap().len() as f64);
-    for index_action in pol.choice.get(index).unwrap() {
-      let dyna = prob.dynamics(index, *index_action);
-      let nb_choice = dyna.len();
-      update += dyna.iter()
-                    .map(|(proba,reward,index_next)|
-                      (*proba as f64)
-                        *((*reward as f64)+prob.discount()*val.value[*index_next])
-                    )
-                    .sum::<f64>()*(factor/nb_choice as f64);
-    }
-    max_diff = max_diff.max((update-val.value[index]).abs());
-    value[index] = update;
-    update = 0.0;
-  }
-  (StateValue{value},max_diff)
-}
-
 fn policy_improvement<S,A,M>(prob : &M,
                              val : &StateValue) -> Policy
   where S : State,
@@ -113,14 +86,7 @@ fn policy_improvement<S,A,M>(prob : &M,
   let mut max_indexes : Vec<usize> = Vec::new();
   for index in 0..prob.nb_states() {
     for index_action in 0..prob.nb_actions() {
-      let dyna = prob.dynamics(index, index_action);
-      let nb_choice = dyna.len();
-      let ret = dyna.iter()
-                    .map(|(proba,reward,index_next)|
-                      (*proba as f64)
-                        *((*reward as f64)+prob.discount()*val.value[*index_next])
-                    )
-                    .sum::<f64>()/(nb_choice as f64);
+      let ret = get_update(prob,val,index,index_action);
       if index_action == 0 || (ret > max_val + std::f64::EPSILON) {
         max_val = ret;
         max_indexes.clear();
@@ -135,6 +101,8 @@ fn policy_improvement<S,A,M>(prob : &M,
   Policy {choice : new_pol}
 }
 
+// Value iteration
+
 fn value_iteration<S,A,M>(prob : &M,
                           pol : &Policy,
                           val : &StateValue) -> (Policy,StateValue)
@@ -145,6 +113,49 @@ fn value_iteration<S,A,M>(prob : &M,
   let (new_val,_) = sweep(prob,pol,val);
 
   (policy_improvement(prob,&new_val),new_val)
+}
+
+
+// Helper functions
+
+fn sweep<S,A,M>(prob : &M,
+                pol : &Policy,
+                val : &StateValue) -> (StateValue,f64)
+  where S : State,
+        A : Action,
+        M : MDP<S,A> {
+
+
+  let mut max_diff : f64 = 0.0;
+  let mut value = vec![0.0; prob.nb_states()];
+  let mut update : f64 = 0.0;
+  for index in 0..prob.nb_states() {
+    let factor = 1.0/(pol.choice.get(index).unwrap().len() as f64);
+    for index_action in pol.choice.get(index).unwrap() {
+      update += factor*get_update(prob,val,index,*index_action)
+    }
+    max_diff = max_diff.max((update-val.value[index]).abs());
+    value[index] = update;
+    update = 0.0;
+  }
+  (StateValue{value},max_diff)
+}
+
+fn get_update<S,A,M>(prob : &M,
+                     val : &StateValue,
+                     index : usize,
+                     index_action : usize) -> f64
+  where S : State,
+        A : Action,
+        M : MDP<S,A> {
+      let dyna = prob.dynamics(index, index_action);
+      let nb_choice = dyna.len();
+      dyna.iter()
+          .map(|(proba,reward,index_next)|
+            (*proba as f64)
+              *((*reward as f64)+prob.discount()*val.value[*index_next])
+          )
+          .sum::<f64>()/(nb_choice as f64)
 }
 
 
