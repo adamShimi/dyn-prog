@@ -149,13 +149,12 @@ fn get_update<S,A,M>(prob : &M,
         A : Action,
         M : MDP<S,A> {
       let dyna = prob.dynamics(index, index_action);
-      let nb_choice = dyna.len();
+      let discount = prob.discount();
       dyna.iter()
           .map(|(proba,reward,index_next)|
-            (*proba as f64)
-              *((*reward as f64)+prob.discount()*val.value[*index_next])
+            (*proba)*(*reward) + discount*val.value[*index_next]
           )
-          .sum::<f64>()/(nb_choice as f64)
+          .sum::<f64>()/(dyna.len() as f64)
 }
 
 
