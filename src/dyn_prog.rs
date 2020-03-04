@@ -10,21 +10,20 @@ pub fn run_policy_iteration<S,A,M>(prob : &M,
 
   let mut pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
                                        prob.nb_states()] };
-  let mut new_pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
-                                           prob.nb_states()] };
+  let mut new_pol;
 
   loop {
-    new_pol = std::mem::replace(&mut pol,new_pol);
-    std::mem::replace(&mut new_pol,
-                      policy_improvement(prob,
-                                         &policy_evaluation(prob,
-                                                            &pol,
-                                                            thresh)));
+    new_pol = policy_improvement(prob,
+                                 &policy_evaluation(prob,
+                                                    &pol,
+                                                    thresh));
     if new_pol == pol {
       break;
+    } else {
+      std::mem::replace(&mut pol,new_pol);
     }
   }
-  new_pol
+  pol
 }
 
 pub fn run_value_iteration<S,A,M>(prob : &M) -> Policy
@@ -34,21 +33,19 @@ pub fn run_value_iteration<S,A,M>(prob : &M) -> Policy
 
   let mut pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
                                        prob.nb_states()] };
-  let mut new_pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
-                                           prob.nb_states()] };
   let mut val = StateValue { value : vec![0.0; prob.nb_states()] };
 
   loop {
-    new_pol = std::mem::replace(&mut pol,new_pol);
-    let (pol_next, new_val) = value_iteration(prob, &pol, &val);
-    std::mem::replace(&mut new_pol, pol_next);
-    std::mem::replace(&mut val, new_val);
+    let (new_pol, new_val) = value_iteration(prob, &pol, &val);
 
-    if new_pol.choice == pol.choice {
+    if new_pol == pol {
       break;
+    } else {
+      std::mem::replace(&mut pol,new_pol);
+      std::mem::replace(&mut val, new_val);
     }
   }
-  new_pol
+  pol
 }
 
 // Policy iteration
