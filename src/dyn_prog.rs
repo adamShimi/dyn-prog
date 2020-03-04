@@ -84,7 +84,7 @@ fn policy_improvement<S,A,M>(prob : &M,
   for index in 0..prob.nb_states() {
     for index_action in 0..prob.nb_actions() {
       let ret = get_update(prob,val,index,index_action);
-      if (ret > max_val + std::f64::EPSILON) {
+      if ret > max_val + std::f64::EPSILON {
         max_val = ret;
         max_indexes.clear();
         max_indexes.push(index_action);
