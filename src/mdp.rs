@@ -39,6 +39,10 @@ pub struct StateValue {
   pub value : Vec<f64>,
 }
 
+pub struct ActionValue {
+  pub value : Vec<f64>,
+}
+
 
 pub mod grid_world {
 

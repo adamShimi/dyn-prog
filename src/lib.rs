@@ -1,5 +1,6 @@
 pub mod mdp;
 pub mod dyn_prog;
+pub mod mc;
 
 use mdp::{State, Action, MDP, Policy};
 use dyn_prog::{run_policy_iteration,run_value_iteration};
