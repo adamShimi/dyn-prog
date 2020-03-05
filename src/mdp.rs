@@ -15,6 +15,19 @@ pub trait MDP<S : State, A : Action> {
   fn dynamics(&self, index_state : usize, index_action : usize) -> Vec<(f64,f64,usize)>;
 }
 
+pub trait SampleMDP<S : State, A : Action> {
+
+  fn nb_states(&self) -> usize;
+  fn nb_actions(&self) -> usize;
+  fn discount(&self) -> f64;
+
+  // Returns for a given state action pair (their indexes) the next pair
+  // (reward,next_state) given by the sample model. If it returns None,
+  // the state is terminal.
+  fn sample(&self, index_state : usize, index_action : usize) -> Option<(f64,usize)>;
+}
+
+
 // Tabular MDP
 pub struct TabMDP<'a, S : State, A : Action> {
   pub states : &'a [S],
@@ -46,7 +59,7 @@ pub struct ActionValue {
 
 pub mod grid_world {
 
-  use super::{State,Action,MDP};
+  use super::{State,Action,MDP,SampleMDP};
 
   #[derive(PartialEq)]
   pub struct GridState {
@@ -134,4 +147,38 @@ pub mod grid_world {
       }
     }
   }
+
+
+  impl SampleMDP<GridState,GridAction> for GridWorld {
+    fn nb_states(&self) -> usize {
+      self.nb_rows*self.nb_cols
+    }
+    fn nb_actions(&self) -> usize {
+      4
+    }
+    fn discount(&self) -> f64 {
+      self.discount
+    }
+
+    fn sample(&self, index_state : usize, index_action : usize) -> Option<(f64,usize)> {
+      let cell : GridState = self.from_index(index_state).unwrap();
+      if cell == self.end {
+        None
+      } else {
+        let mut next_cell = GridState {row : cell.row, col : cell.col};
+        match index_action {
+          0 => {next_cell.row +=1;},
+          1 => {if next_cell.row > 0 {next_cell.row -=1;}},
+          2 => {if next_cell.col > 0 {next_cell.col -=1;}},
+          3 => {next_cell.col +=1;},
+          _ => {panic!("Index action of gridworld out of bounds");}
+        }
+        match self.to_index(next_cell) {
+          None => Some((-1.0,index_state)),
+          Some(index_next) => Some((-1.0,index_next)),
+        }
+      }
+    }
+  }
+
 }
