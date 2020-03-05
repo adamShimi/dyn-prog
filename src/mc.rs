@@ -12,9 +12,10 @@ pub fn run_monte_carlo_first_visit<S,A,M>(prob : &M) -> Policy
   let mut new_pol;
   let mut action_value =
     ActionValue { value : vec![0.0; prob.nb_actions()] };
+  let mut episode;
 
   loop {
-    let episode = get_episode(prob, &pol);
+    episode = get_episode(prob, &pol);
     new_pol = update_first_visit(&pol, &mut action_value, episode);
 
     if new_pol == pol {
