@@ -1,21 +1,15 @@
-# Dynamic programming library in Rust
+# Tabular Reinforcement Learning library in Rust
 
 ## Content
 
-A dynamic programming library, computing optimal policies for Markov Decision Processes.
+A tabular Reinforcement Learning library, computing optimal policies for Markov Decision Processes.
 
-## Next steps
+## TODO
 
-* ~~Finish value iteration.~~ Done
-* ~~Unit test value iteration.~~ Done
-* ~~Abstract away GPI.~~ Done
-* ~~Transition to stochastic policies.~~ Done
-* ~~Transition to stochastic problems.~~ Done
-* ~~Extract structure from API.~~ Done
-* ~~Make the test work!~~ Done
-* ~~Write benchmarks.~~ Done
-* Optimize.
-* Write examples with hardcoded MDP and openAI gym problems.
-* Write comments.
-* Write documentation.
-* Publish the crate.
+* ~~MDP~~
+* ~~Distributional Models~~
+* ~~Dynamic Programming~~
+* ~~Benchmarks~~
+* Monte Carlo
+* Temporal-Difference
+* n-step TD
