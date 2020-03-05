@@ -27,9 +27,11 @@ pub fn run_monte_carlo_first_visit<S,A,M>(prob : &M) -> Policy
   new_pol
 }
 
-struct Episode;
+struct Episode {
+  events : Vec<(usize,usize,f64)>
+}
 
-fn get_episode<S,A,M>(prob : &M, pol : &Policy) -> Episode
+fn get_episode<S,A,M>(prob : &M, pol : &Policy, start_index : usize) -> Episode
   where S : State,
         A : Action,
         M : MDP<S,A> {
