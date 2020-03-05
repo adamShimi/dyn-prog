@@ -1,5 +1,6 @@
 use crate::mdp::{State, Action, ActionValue, MDP, Policy};
 use rand::Rng;
+use rand::distributions::{Distribution, Uniform};
 
 // Public API
 
@@ -15,8 +16,11 @@ pub fn run_monte_carlo_first_visit<S,A,M>(prob : &M) -> Policy
     ActionValue { value : vec![0.0; prob.nb_actions()] };
   let mut episode;
 
+  let starts = Uniform::from(0..prob.nb_states());
+  let mut rng = rand::thread_rng();
+
   loop {
-    episode = get_episode(prob, &pol, rand::thread_rng().gen_range(0,prob.nb_states()));
+    episode = get_episode(prob, &pol, starts.sample(&mut rng));
     new_pol = update_first_visit(&pol, &mut action_value, episode);
 
     if new_pol == pol {
