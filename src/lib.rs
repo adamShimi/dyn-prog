@@ -1,3 +1,5 @@
+extern crate rand;
+
 pub mod mdp;
 pub mod dyn_prog;
 pub mod mc;
