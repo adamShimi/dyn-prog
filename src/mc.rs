@@ -1,13 +1,14 @@
-use crate::mdp::{State, Action, ActionValue, MDP, Policy};
+use crate::mdp::{State, Action, ActionValue, SampleMDP, Policy};
 use rand::Rng;
 use rand::distributions::{Distribution, Uniform};
+use rand::prelude::SliceRandom;
 
 // Public API
 
 pub fn run_monte_carlo_first_visit<S,A,M>(prob : &M) -> Policy
   where S : State,
         A : Action,
-        M : MDP<S,A> {
+        M : SampleMDP<S,A> {
 
   let mut pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
                                        prob.nb_states()] };
@@ -39,8 +40,20 @@ struct Episode {
 fn get_episode<S,A,M>(prob : &M, pol : &Policy, start_index : usize) -> Episode
   where S : State,
         A : Action,
-        M : MDP<S,A> {
-  unimplemented!();
+        M : SampleMDP<S,A> {
+
+  let rng = &mut rand::thread_rng();
+
+  let mut episode = Episode { events : Vec::new() };
+  let mut index = start_index;
+  let mut index_action = pol.choice[index].choose(rng).unwrap();
+
+  while let Some ((reward,index_next)) = prob.sample(index,*index_action) {
+    episode.events.push((index,*index_action,reward));
+    index = index_next;
+    index_action = pol.choice[index].choose(rng).unwrap();
+  }
+  episode
 }
 
 fn update_first_visit(pol : &Policy,
