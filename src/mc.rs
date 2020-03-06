@@ -24,6 +24,7 @@ pub fn run_monte_carlo_first_visit<S,A,M>(prob : &M) -> Policy
     episode = get_episode(prob, &pol, starts.sample(&mut rng));
     new_pol = update_first_visit(&pol, &mut action_value, episode);
 
+    // Maybe not adapted to Monte Carlo
     if new_pol == pol {
       break;
     } else {
