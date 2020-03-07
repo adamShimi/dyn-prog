@@ -22,7 +22,7 @@ pub fn run_monte_carlo_first_visit<S,A,M>(prob : &M) -> Policy
 
   loop {
     episode = get_episode(prob, &pol, starts.sample(&mut rng));
-    new_pol = update_first_visit(&pol, &mut action_value, episode);
+    new_pol = update_first_visit(prob, &pol, &mut action_value, episode);
 
     // Maybe not adapted to Monte Carlo
     if new_pol == pol {
@@ -57,8 +57,21 @@ fn get_episode<S,A,M>(prob : &M, pol : &Policy, start_index : usize) -> Episode
   episode
 }
 
-fn update_first_visit(pol : &Policy,
-                      action_value: &mut ActionValue,
-                      episode: Episode) -> Policy {
-  unimplemented!();
+fn update_first_visit<S,A,M>(prob : &M,
+                             pol : &Policy,
+                             action_value: &mut ActionValue,
+                             episode: Episode) -> Policy
+  where S : State,
+        A : Action,
+        M : SampleMDP<S,A> {
+
+
+  let mut new_pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
+                                           prob.nb_states()] };
+  let mut partial_return : f64 = 0.0;
+
+  for (index,index_action,reward) in episode.events.iter().rev() {
+    partial_return += reward;
+  }
+  new_pol
 }
