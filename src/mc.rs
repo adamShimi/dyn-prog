@@ -70,9 +70,10 @@ fn update_first_visit<S,A,M>(prob : &M,
   let mut new_pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
                                            prob.nb_states()] };
   let mut partial_return : f64 = 0.0;
+  let discount = prob.discount();
 
   for (index,index_action,reward) in episode.events.iter().rev() {
-    partial_return += reward;
+    partial_return = reward + discount*partial_return;
   }
   new_pol
 }
