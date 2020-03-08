@@ -53,7 +53,7 @@ pub struct StateValue {
 }
 
 pub struct ActionValue {
-  pub value : Vec<f64>,
+  pub value : HashMap<(usize,usize),f64>,
 }
 
 

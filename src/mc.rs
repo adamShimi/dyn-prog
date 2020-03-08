@@ -1,4 +1,5 @@
 use crate::mdp::{State, Action, ActionValue, SampleMDP, Policy};
+use std::collections::HashMap;
 use rand::Rng;
 use rand::distributions::{Distribution, Uniform};
 use rand::prelude::SliceRandom;
@@ -14,7 +15,7 @@ pub fn run_monte_carlo_first_visit<S,A,M>(prob : &M) -> Policy
                                        prob.nb_states()] };
   let mut new_pol;
   let mut action_value =
-    ActionValue { value : vec![0.0; prob.nb_actions()] };
+    ActionValue { value : HashMap::new() };
   let mut episode;
 
   let starts = Uniform::from(0..prob.nb_states());
