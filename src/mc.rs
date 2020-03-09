@@ -70,10 +70,29 @@ fn update_first_visit<S,A,M>(prob : &M,
   let mut new_pol = Policy { choice : vec![(0..prob.nb_actions()).collect::<Vec<usize>>();
                                            prob.nb_states()] };
   let mut partial_return : f64 = 0.0;
+  let mut seen : HashSet<(usize,usize)> = HashSet::new();
   let discount = prob.discount();
 
   for (index,index_action,reward) in episode.events.iter().rev() {
     partial_return = reward + discount*partial_return;
+    if !seen.contains(&(*index,*index_action)) {
+      seen.insert((*index,*index_action));
+      let (count,q) = action_value.value
+                                  .entry((*index,*index_action))
+                                  .or_insert((0,0.0));
+      *count += 1;
+      *q += (partial_return-*q)/(*count as f64);
+      new_pol.choice[*index] = max_action(prob,*index,action_value);
+    }
   }
   new_pol
+}
+
+fn max_action<S,A,M>(prob : &M,
+                     index : usize,
+                     action_value : &ActionValue) -> Vec<usize>
+  where S : State,
+        A : Action,
+        M : SampleMDP<S,A> {
+  unimplemented!();
 }

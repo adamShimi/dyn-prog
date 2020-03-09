@@ -53,9 +53,8 @@ pub struct StateValue {
 }
 
 pub struct ActionValue {
-  pub value : HashMap<(usize,usize),f64>,
+  pub value : HashMap<(usize,usize),(usize,f64)>,
 }
-
 
 pub mod grid_world {
 
