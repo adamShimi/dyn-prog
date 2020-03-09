@@ -1,5 +1,5 @@
 use crate::mdp::{State, Action, ActionValue, SampleMDP, Policy};
-use std::collections::HashMap;
+use std::collections::{HashMap,HashSet};
 use rand::Rng;
 use rand::distributions::{Distribution, Uniform};
 use rand::prelude::SliceRandom;
@@ -23,7 +23,7 @@ pub fn run_monte_carlo_first_visit<S,A,M>(prob : &M) -> Policy
 
   loop {
     episode = get_episode(prob, &pol, starts.sample(&mut rng));
-    new_pol = update_first_visit(prob, &pol, &mut action_value, episode);
+    new_pol = update_first_visit(prob, &mut action_value, episode);
 
     // Maybe not adapted to Monte Carlo
     if new_pol == pol {
@@ -59,7 +59,6 @@ fn get_episode<S,A,M>(prob : &M, pol : &Policy, start_index : usize) -> Episode
 }
 
 fn update_first_visit<S,A,M>(prob : &M,
-                             pol : &Policy,
                              action_value: &mut ActionValue,
                              episode: Episode) -> Policy
   where S : State,
