@@ -93,5 +93,19 @@ fn max_action<S,A,M>(prob : &M,
   where S : State,
         A : Action,
         M : SampleMDP<S,A> {
-  unimplemented!();
+
+  let mut max_val : f64 = std::f64::MIN;
+  let mut max_indexes : Vec<usize> = Vec::new();
+
+  for index_action in 0..prob.nb_actions() {
+    let (_,q) = action_value.value.get(&(index,index_action)).unwrap();
+    if *q > max_val + std::f64::EPSILON {
+      max_val = *q;
+      max_indexes.clear();
+      max_indexes.push(index_action);
+    } else if (*q-max_val).abs() <= std::f64::EPSILON {
+      max_indexes.push(index_action);
+    }
+  }
+  max_indexes
 }
